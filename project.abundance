@@ -12,6 +12,10 @@
     {
       "name": "Radius",
       "ioValue": 10
+    },
+    {
+      "name": "Bounding_Box",
+      "ioValue": "__GEOMETRY_INPUT__"
     }
   ],
   "topLevel": true,
@@ -30,8 +34,8 @@
     },
     {
       "atomType": "Code",
-      "x": 0.5178571428571428,
-      "y": 0.5292479108635098,
+      "x": 0.5509259259259259,
+      "y": 0.2590529247910863,
       "uniqueID": "id-451",
       "ioValues": [
         {
@@ -40,7 +44,7 @@
         },
         {
           "name": "radius",
-          "ioValue": 10
+          "ioValue": 2
         }
       ],
       "codeVersion": 1,
@@ -49,7 +53,7 @@
     {
       "atomType": "Input",
       "x": 0.025384615384615384,
-      "y": 0.44846796657381616,
+      "y": 0.42618384401114207,
       "uniqueID": "id-455",
       "name": "Shape",
       "type": "geometry"
@@ -57,7 +61,7 @@
     {
       "atomType": "Input",
       "x": 0.025384615384615384,
-      "y": 0.6462395543175488,
+      "y": 0.6211699164345404,
       "uniqueID": "id-458",
       "name": "Radius"
     },
@@ -95,28 +99,134 @@
           "currentEquation": "100"
         }
       ]
+    },
+    {
+      "atomType": "Code",
+      "x": 0.6058201058201058,
+      "y": 0.6350974930362118,
+      "uniqueID": "id-471",
+      "ioValues": [
+        {
+          "name": "shape",
+          "ioValue": "__GEOMETRY_INPUT__"
+        },
+        {
+          "name": "radius",
+          "ioValue": 10
+        },
+        {
+          "name": "region",
+          "ioValue": "__GEOMETRY_INPUT__"
+        }
+      ],
+      "codeVersion": 1,
+      "code": "const Inputs = [\n  { inputName: \"shape\", type: \"geometry\", defaultValue: null },\n  { inputName: \"radius\", type: \"number\", defaultValue: 2 },\n  { inputName: \"region\", type: \"geometry\", defaultValue: null },\n];\n\nlet assembly = library[shape];\n\nlet edgeFilter;\nif (region !== null) {\n  let bounds = await GetBounds(region);\n  edgeFilter = (e) => e.inDirection(\"Z\").inBox(bounds.min, bounds.max);\n} else {\n  edgeFilter = (e) => e.inDirection(\"Z\");\n}\n\nreturn await AssemblyMap(assembly, async (leaf) => {\n  let solid = leaf.geometry[0];\n  let filleted = solid.fillet(radius, edgeFilter);\n  return { ...leaf, geometry: [filleted] };\n});\n"
+    },
+    {
+      "atomType": "Rectangle",
+      "x": 0.27050264550264547,
+      "y": 0.9526462395543175,
+      "uniqueID": "id-476",
+      "ioValues": [
+        {
+          "name": "x length",
+          "ioValue": 100,
+          "currentEquation": "100"
+        },
+        {
+          "name": "y length",
+          "ioValue": 100,
+          "currentEquation": "100"
+        }
+      ]
+    },
+    {
+      "atomType": "Extrude",
+      "x": 0.37050264550264544,
+      "y": 0.9526462395543175,
+      "uniqueID": "id-480",
+      "ioValues": [
+        {
+          "name": "geometry",
+          "ioValue": "__GEOMETRY_INPUT__"
+        },
+        {
+          "name": "height",
+          "ioValue": 150,
+          "currentEquation": "150"
+        }
+      ]
+    },
+    {
+      "atomType": "Move",
+      "x": 0.5,
+      "y": 0.8969359331476323,
+      "uniqueID": "id-484",
+      "ioValues": [
+        {
+          "name": "geometry",
+          "ioValue": "__GEOMETRY_INPUT__"
+        },
+        {
+          "name": "xDist",
+          "ioValue": 20,
+          "currentEquation": "20"
+        },
+        {
+          "name": "yDist",
+          "ioValue": 20,
+          "currentEquation": "20"
+        },
+        {
+          "name": "zDist",
+          "ioValue": 0
+        }
+      ]
+    },
+    {
+      "atomType": "Input",
+      "x": 0.025384615384615384,
+      "y": 0.8662952646239555,
+      "uniqueID": "id-490",
+      "name": "Bounding_Box",
+      "type": "geometry"
     }
   ],
   "allConnectors": [
     {
-      "ap2Name": "number or geometry",
-      "ap1ID": "id-451",
-      "ap2ID": "id-449"
-    },
-    {
       "ap2Name": "shape",
       "ap1ID": "id-455",
-      "ap2ID": "id-451"
+      "ap2ID": "id-471"
     },
     {
       "ap2Name": "radius",
       "ap1ID": "id-458",
-      "ap2ID": "id-451"
+      "ap2ID": "id-471"
     },
     {
       "ap2Name": "geometry",
       "ap1ID": "id-461",
       "ap2ID": "id-465"
+    },
+    {
+      "ap2Name": "number or geometry",
+      "ap1ID": "id-471",
+      "ap2ID": "id-449"
+    },
+    {
+      "ap2Name": "geometry",
+      "ap1ID": "id-476",
+      "ap2ID": "id-480"
+    },
+    {
+      "ap2Name": "geometry",
+      "ap1ID": "id-480",
+      "ap2ID": "id-484"
+    },
+    {
+      "ap2Name": "region",
+      "ap1ID": "id-490",
+      "ap2ID": "id-471"
     }
   ],
   "unitsKey": "MM",
